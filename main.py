@@ -4,6 +4,7 @@ import pandas as pd
 import time
 import random
 
+# функция которая парсит посты
 def parse_pikabu_new_posts(pages=3):
     """
     Парсит новые посты с Pikabu.ru
@@ -48,14 +49,15 @@ def parse_pikabu_new_posts(pages=3):
 
     return posts_data
 
+# функция показа собранных данных в терминал
 def written_posts_data():
     with open("data.txt", 'r') as data:
 
         r = data.read()
         print(r)
 
+# Извлекает данные из элемента поста
 def extract_post_data(post_element, base_url):
-    """Извлекает данные из элемента поста"""
     try:
         # ID поста
         post_id = post_element.get('data-post-id', '')
@@ -90,8 +92,9 @@ def extract_post_data(post_element, base_url):
         print(f"Ошибка при парсинге поста: {e}")
         return None
 
+
+# Сохраняет данные в CSV-файл
 def save_to_csv(data, filename='pikabu_posts.csv'):
-    """Сохраняет данные в CSV-файл"""
     df = pd.DataFrame(data)
     df.to_csv(filename, index=False, encoding='utf-8')
     print(f"Данные сохранены в {filename}")
