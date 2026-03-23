@@ -43,7 +43,16 @@ def parse_pikabu_new_posts(pages=3):
             print(f"Ошибка при запросе страницы {page_num}: {e}")
             continue
 
+    with open("data.txt", "w") as data:
+        data.write(str(posts_data))
+
     return posts_data
+
+def written_posts_data():
+    with open("data.txt", 'r') as data:
+
+        r = data.read()
+        print(r)
 
 def extract_post_data(post_element, base_url):
     """Извлекает данные из элемента поста"""
@@ -92,4 +101,5 @@ if __name__ == '__main__':
     print("Начинаем парсинг новых постов с Pikabu.ru...")
     posts = parse_pikabu_new_posts(pages=1) # выбираем количество страниц pages=1
     save_to_csv(posts)
+    written_posts_data()
     print(f"Успешно собрано {len(posts)} постов")
