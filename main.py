@@ -70,7 +70,7 @@ def extract_post_data(post_element, base_url):
 
 
         # Количество комментариев
-        comments_elem = post_element.select_one('.story-meta__comments-link')
+        comments_elem = post_element.select_one('.story__comments-link-count')
         comments = comments_elem.get_text(strip=True).split()[0] if comments_elem else '0'
 
         return {
