@@ -65,7 +65,7 @@ def extract_post_data(post_element, base_url):
         # Заголовок
         title_elem = post_element.select_one('.story__title a')
         title = title_elem.get_text(strip=True) if title_elem else 'Без заголовка'
-        link = base_url + title_elem['href'] if title_elem and title_elem.get('href') else ''
+        link = title_elem['href'] if title_elem and title_elem.get('href') else ''
 
         # Автор
         author_elem = post_element.select_one('.user__nick')
