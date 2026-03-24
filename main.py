@@ -59,9 +59,6 @@ def written_posts_data():
 # Извлекает данные из элемента поста
 def extract_post_data(post_element, base_url):
     try:
-        # ID поста
-        post_id = post_element.get('data-post-id', '')
-
         # Заголовок
         title_elem = post_element.select_one('.story__title a')
         title = title_elem.get_text(strip=True) if title_elem else 'Без заголовка'
@@ -72,20 +69,14 @@ def extract_post_data(post_element, base_url):
         author = author_elem.get_text(strip=True) if author_elem else 'Неизвестный'
 
 
-        # Рейтинг
-        rating_elem = post_element.select_one('.rating__value')
-        rating = rating_elem.get_text(strip=True) if rating_elem else '0'
-
         # Количество комментариев
         comments_elem = post_element.select_one('.story-meta__comments-link')
         comments = comments_elem.get_text(strip=True).split()[0] if comments_elem else '0'
 
         return {
-            'id': post_id,
             'title': title,
             'link': link,
             'author': author,
-            'rating': rating,
             'comments': comments
         }
     except Exception as e:
