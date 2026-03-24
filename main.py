@@ -87,13 +87,14 @@ def extract_post_data(post_element, base_url):
 # Сохраняет данные в CSV-файл
 def save_to_csv(data, filename='pikabu_posts.csv'):
     df = pd.DataFrame(data)
-    df.to_csv(filename, index=False, encoding='utf-8')
+    df_clean = df[df['comments'] != '0']
+    df_clean.to_csv(filename, index=False, encoding='utf-8')
     print(f"Данные сохранены в {filename}")
 
 # Основной запуск
 if __name__ == '__main__':
     print("Начинаем парсинг новых постов с Pikabu.ru...")
-    posts = parse_pikabu_new_posts(pages=1) # выбираем количество страниц pages=1
+    posts = parse_pikabu_new_posts(pages=2) # выбираем количество страниц pages=1
     save_to_csv(posts)
     written_posts_data()
     print(f"Успешно собрано {len(posts)} постов")
