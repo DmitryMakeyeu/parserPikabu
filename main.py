@@ -86,20 +86,51 @@ def extract_post_data(post_element, base_url):
 
 
 # Сохраняет данные в CSV-файл, дополняя его
-def save_to_csv(data, filename='pikabu_posts.csv'):
+def save_to_csv(data, filename='pikabu_posts.csv', unique_key='link'):
     df = pd.DataFrame(data)
     df_clean = df[df['comments'] != '0']
     file_exists = os.path.isfile(filename)
-    try:
-        df_clean.to_csv(filename, mode='a', header=not file_exists, index=False, encoding='utf-8-sig')
-        print(f"Данные сохранены в {filename}")
-    except Exception as e:
-        print(f"Ошибка при сохранении файла: {e}")
+    if file_exists:
+        try:
+            # Читаем существующие данные
+            existing_df = pd.read_csv(filename)
+            # Получаем множество существующих уникальных идентификаторов
+            existing_ids = set(existing_df[unique_key].dropna())
+            print(f"Загружено {len(existing_ids)} существующих идентификаторов")
+
+            # Фильтруем новые данные: оставляем только строки с новыми ID
+            new_posts = df_clean[~df_clean[unique_key].isin(existing_ids)]
+            duplicates_count = len(df_clean) - len(new_posts)
+            print(f"Обнаружено {duplicates_count} дубликатов — они не будут сохранены")
+        except Exception as e:
+            print(f"Ошибка при чтении существующего файла: {e}")
+            # Если ошибка чтения, сохраняем все отфильтрованные данные
+            new_posts = df_clean
+    else:
+        # Если файла нет, все отфильтрованные данные — новые
+        new_posts = df_clean
+        print("Файл не существует, все данные считаются новыми")
+
+        # Сохраняем только новые данные
+        if new_posts.empty:
+            print("Нет новых статей для сохранения")
+            return
+        try:
+            new_posts.to_csv(
+                filename,
+                mode='a',
+                header=not file_exists,  # заголовки только для нового файла
+                index=False,
+                encoding='utf-8-sig'
+            )
+            print(f"Добавлено {len(new_posts)} новых статей в {filename}")
+        except Exception as e:
+            print(f"Ошибка при сохранении файла: {e}")
 
 # Основной запуск
 if __name__ == '__main__':
     print("Начинаем парсинг новых постов с Pikabu.ru...")
-    posts = parse_pikabu_new_posts(pages=2) # выбираем количество страниц pages=1
+    posts = parse_pikabu_new_posts(pages=1) # выбираем количество страниц pages=1
     save_to_csv(posts)
     written_posts_data()
     print(f"Успешно собрано {len(posts)} постов")
