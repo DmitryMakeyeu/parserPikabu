@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import time
 import random
+import os
 
 # функция которая парсит посты
 def parse_pikabu_new_posts(pages=3):
@@ -84,12 +85,16 @@ def extract_post_data(post_element, base_url):
         return None
 
 
-# Сохраняет данные в CSV-файл
+# Сохраняет данные в CSV-файл, дополняя его
 def save_to_csv(data, filename='pikabu_posts.csv'):
     df = pd.DataFrame(data)
     df_clean = df[df['comments'] != '0']
-    df_clean.to_csv(filename, index=False, encoding='utf-8')
-    print(f"Данные сохранены в {filename}")
+    file_exists = os.path.isfile(filename)
+    try:
+        df_clean.to_csv(filename, mode='a', header=not file_exists, index=False, encoding='utf-8-sig')
+        print(f"Данные сохранены в {filename}")
+    except Exception as e:
+        print(f"Ошибка при сохранении файла: {e}")
 
 # Основной запуск
 if __name__ == '__main__':
